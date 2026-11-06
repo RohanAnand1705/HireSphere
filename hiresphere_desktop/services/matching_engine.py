@@ -15,5 +15,7 @@ def score_resume(resume, job):
     experience = 1.0 if profile.get("experience", "").strip() else 0.35
     education = 1.0 if profile.get("education", "").strip() else 0.35
     certs = 1.0 if profile.get("certifications", "").strip() else 0.35
+    breakdown = {"skills": round(skill * 40), "projects": round(project * 25), "experience": round(experience * 15), "education": round(education * 10), "certifications": round(certs * 10)}
     pct = round(100 * (.40*skill + .25*project + .15*experience + .10*education + .10*certs))
-    return {"score": pct, "matching": matched, "missing": missing, "explanation": f"Skills {skill:.0%} (40%), project relevance {project:.0%} (25%), experience {experience:.0%} (15%), education {education:.0%} (10%), certifications {certs:.0%} (10%)."}
+    relevant_projects = profile.get("projects", "") if tokens(profile.get("projects", "")) & (tokens(job.get("title", "")) | required) else ""
+    return {"score": pct, "matching": matched, "missing": missing, "relevant_projects": relevant_projects, "breakdown": breakdown, "explanation": f"Skills {skill:.0%} (40%), project relevance {project:.0%} (25%), experience {experience:.0%} (15%), education {education:.0%} (10%), certifications {certs:.0%} (10%)."}
